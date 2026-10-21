@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Management Dept Delivery · Healthy Go</title>
+<meta name="theme-color" content="#074b34"><meta name="description" content="Penilaian harian kurir Healthy Go">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="HG Delivery">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--hg:#074b34;--hg-deep:#04331f;--hg-700:#0b5e41;--hg-500:#1d8a5b;--hg-100:#e3f1e8;--hg-50:#f1f7f3;--sun:#f3cf1b;--bg:#f4f6f1;--card:#fff;--ink:#13241c;--muted:#5d6e65;--line:#dde6df;
+--ok:#167a43;--ok-bg:#e2f4e8;--warn:#9a5b00;--warn-bg:#fff2d3;--bad:#b4281c;--bad-bg:#fde7e4;--radius:14px;--side:264px}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:11px 16px;font-weight:700;line-height:1.2}
+button:disabled{opacity:.55;cursor:wait}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.btn-primary{background:var(--hg);color:#fff}.btn-primary:hover{background:var(--hg-700)}
+.btn-soft{background:var(--hg-100);color:var(--hg)}.btn-soft:hover{background:#d4eadc}
+.btn-danger{background:var(--bad);color:#fff}.btn-warn{background:#c98a06;color:#fff}
+.btn-sm{padding:8px 12px;font-size:13px;border-radius:8px}
+.hidden{display:none!important}
+.small{font-size:12.5px;color:var(--muted)}
+.msg{padding:11px 14px;border-radius:10px;margin:12px 0;background:var(--hg-50);color:var(--hg);font-size:13.5px;border:1px solid var(--hg-100);white-space:pre-line}
+.msg.error{background:var(--bad-bg);color:var(--bad);border-color:#f6c8c2}
+
+/* ---------- Login ---------- */
+.loginwrap{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:28px 18px;background:radial-gradient(circle at 15% 10%,#0e6a48 0,transparent 45%),radial-gradient(circle at 90% 90%,#0b5e41 0,transparent 40%),var(--hg)}
+.loginstack{width:min(400px,100%);display:flex;flex-direction:column;align-items:center;gap:22px}
+.loginbrand{text-align:center;color:#fff}.loginbrand img{width:170px;height:auto;display:block;margin:0 auto 14px}
+.loginbrand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.01em}.loginbrand p{margin:4px 0 0;color:#bfe0cf;font-size:13.5px}
+.loginbox{background:#fff;border-radius:18px;padding:26px 22px;width:100%;box-shadow:0 24px 60px rgba(2,28,18,.35)}
+.loginbox h2{margin:0 0 4px;font-size:18px}.loginbox .field{margin:14px 0}.loginbox button{width:100%;margin-top:6px;padding:13px}
+.bootmsg{color:#d8efe2;font-size:15px}
+
+/* ---------- Shell ---------- */
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);background:var(--hg);color:#fff;display:flex;flex-direction:column;z-index:40;transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(0,0,0,.2)}
+body.nav-open .sidebar{transform:none}
+.scrim{position:fixed;inset:0;background:rgba(3,25,17,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:35}
+body.nav-open .scrim{opacity:1;pointer-events:auto}
+.sidehead{position:relative;padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidehead img{width:118px;height:auto;display:block;margin-bottom:12px}
+.sidehead b{display:block;font-size:16px;line-height:1.25}.sidehead span{font-size:12px;color:#a9d3bd}
+.sideclose{position:absolute;top:12px;right:10px;background:transparent;color:#fff;padding:8px;font-size:24px;line-height:1}
+.nav{padding:14px 12px;display:flex;flex-direction:column;gap:4px;flex:1;overflow:auto}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;color:#dcefe4;padding:12px 14px;font-weight:600;border-radius:10px}
+.nav button svg{width:20px;height:20px;flex:0 0 auto}
+.nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav button.active{background:rgba(255,255,255,.13);color:var(--sun)}
+.sidefoot{padding:16px 20px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.sidefoot .who{font-weight:700}.sidefoot .role{font-size:12px;color:#a9d3bd;margin-bottom:12px}
+.sidefoot button{width:100%;background:rgba(255,255,255,.1);color:#fff}.sidefoot button:hover{background:rgba(255,255,255,.18)}
+.main{min-width:0}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.menu-btn{background:var(--hg-50);color:var(--hg);padding:9px;border-radius:10px;display:grid;place-items:center}.menu-btn svg{width:22px;height:22px}
+.topbar h1{margin:0;font-size:17px;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .brandmini{height:26px;width:auto}
+.userchip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--hg);color:var(--sun);display:grid;place-items:center;font-weight:800;font-size:13px}
+.content{padding:16px 14px 40px;max-width:1400px;margin:0 auto}
+.panel{background:var(--card);border-radius:var(--radius);border:1px solid var(--line);padding:16px;margin-bottom:16px}
+.panel h2{margin:0 0 4px;font-size:17px}.panel .sub{margin:0 0 14px}
+
+/* ---------- Form ---------- */
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.lbl{font-size:12.5px;color:#43554b;font-weight:700}
+.field input,.field select{width:100%;border:1px solid #cad6cd;border-radius:10px;padding:11px 12px;background:#fff;font-size:16px;min-height:46px}
+.field input:focus,.field select:focus{border-color:var(--hg-500)}
+.formactions{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.formactions button{flex:1 1 auto}
+
+/* Area checkbox chips */
+.areachecks{border:1px solid #cad6cd;border-radius:12px;background:#fff;padding:10px}
+.checktools{display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.linkbtn{background:none;color:var(--hg-500);padding:2px 0;font-weight:700;font-size:13px;border-radius:4px}
+.checklist{display:flex;flex-wrap:wrap;gap:8px;max-height:168px;overflow:auto}
+.checklist label{display:inline-flex;gap:7px;align-items:center;font-size:13.5px;font-weight:600;white-space:nowrap;cursor:pointer;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--hg-50);user-select:none}
+.checklist label:has(input:checked){background:var(--hg);border-color:var(--hg);color:#fff}
+.areachecks .checklist input{accent-color:var(--sun);width:16px;height:16px;min-height:0;margin:0;padding:0;flex:0 0 auto}
+.savebar button{white-space:nowrap}
+.statcap{margin:14px 0 0}.stats{margin-top:6px}
+
+/* ---------- Tabel ---------- */
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:12px;background:#fff;-webkit-overflow-scrolling:touch}
+.tablewrap.tall{max-height:70vh}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
+th,td{padding:11px 12px;border-bottom:1px solid #e9efea;text-align:left;white-space:nowrap}
+th{background:var(--hg-50);color:#2f4a3c;font-weight:700;font-size:12.5px;position:sticky;top:0;z-index:2}
+tbody tr:last-child td{border-bottom:0}
+.sticky1 td:first-child,.sticky1 th:first-child{position:sticky;left:0;background:#fff;z-index:1;box-shadow:1px 0 0 #e9efea}
+.sticky1 th:first-child{z-index:3;background:var(--hg-50)}
+
+/* Status dashboard */
+.st{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12.5px;font-weight:700}
+.st i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.st-done{background:var(--ok-bg);color:var(--ok)}.st-prog{background:var(--warn-bg);color:var(--warn)}.st-not{background:var(--bad-bg);color:var(--bad)}
+.dash td.cell{text-align:center}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{border-radius:12px;padding:10px 12px;border:1px solid var(--line);background:#fff}
+.stat b{display:block;font-size:22px;font-weight:800;line-height:1.1}.stat span{font-size:11.5px;font-weight:700;white-space:nowrap}
+.stat.done b,.stat.done span{color:var(--ok)}.stat.prog b,.stat.prog span{color:var(--warn)}.stat.not b,.stat.not span{color:var(--bad)}
+
+/* Penilaian */
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--hg);color:#fff;padding:10px 12px;border-radius:12px;margin-top:18px}
+.sectionhead b{font-size:15px}.sectionhead .small{color:#bfe0cf}
+.sectionhead button{background:var(--sun);color:var(--hg-deep)}
+select.pick{padding:8px 10px;border-radius:8px;min-width:130px;width:100%;border:1px solid #cad6cd;background:#fff;font-size:14px;min-height:40px}
+select.pick.p-empty{border-style:dashed;color:var(--muted);background:#fafbf9}
+select.pick.p-ok{border-color:#8dd1a8;background:var(--ok-bg);color:var(--ok);font-weight:600}
+select.pick.p-warn{border-color:#efc66d;background:var(--warn-bg);color:var(--warn);font-weight:600}
+select.pick.p-bad{border-color:#f0a59c;background:var(--bad-bg);color:var(--bad);font-weight:600}
+.v-ok{color:var(--ok);font-weight:700}.v-warn{color:var(--warn);font-weight:700}.v-bad{color:var(--bad);font-weight:700}
+.tag{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle}
+.tag.full{background:var(--ok-bg);color:var(--ok)}.tag.part{background:var(--warn-bg);color:var(--warn)}
+.meta{display:none;font-size:12.5px;color:var(--muted);margin-top:2px;white-space:normal}
+.assess .meta{display:block}.assess td{padding:8px 6px}.assess td:first-child{min-width:180px;padding-left:12px;white-space:normal}.assess select.pick{min-width:124px;font-size:13px;padding:7px 2px 7px 8px}
+.savebar{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px -16px -16px;padding:12px 16px;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);border-radius:0 0 var(--radius) var(--radius)}
+.savebar .small b{color:var(--ink)}
+.savebar{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}.topbar{padding-top:calc(10px + env(safe-area-inset-top,0px))}.sidebar{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.refreshbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px;margin-bottom:14px;background:var(--hg-50);border:1px solid var(--hg-100);border-radius:12px}
+
+/* ---------- Mobile: tabel jadi kartu ---------- */
+@media (max-width:760px){
+  .cardtable thead{display:none}
+  .cardtable,.cardtable tbody{display:block}
+  .cardtable tr{display:grid;grid-template-columns:1fr 1fr;gap:10px 10px;padding:14px 12px;border-bottom:1px solid var(--line)}
+  .cardtable tbody tr:last-child{border-bottom:0}
+  .cardtable td{display:block;padding:0;border:0;white-space:normal;position:static!important;box-shadow:none!important}
+  .cardtable td.c-full{grid-column:1/-1}
+  .cardtable td.c-hide{display:none}
+  .cardtable td[data-label]::before{content:attr(data-label);display:block;font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:4px}
+  .cardtable .meta{display:block}
+  .cardtable select.pick{padding:8px 4px 8px 8px;font-size:14px}
+  .tablewrap.cards{max-height:none}
+}
+@media (max-width:899px){.grid.cols-dash{grid-template-columns:1fr 1fr}.grid.cols-dash .formactions{grid-column:1/-1}}
+@media (min-width:640px){.grid.cols-3{grid-template-columns:1fr 1fr}.content{padding:20px 20px 48px}.panel{padding:20px}.savebar{margin:18px -20px -20px;padding:12px 20px}}
+@media (min-width:900px){.grid.cols-3{grid-template-columns:200px minmax(0,1fr) auto}.grid.cols-dash{grid-template-columns:200px 200px auto}.formactions button{flex:0 0 auto}.grid.cols-acc{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:1024px){
+  .sidebar{transform:none;box-shadow:none}.scrim,.menu-btn,.sideclose,.topbar .brandmini{display:none}
+  .main{margin-left:var(--side)}.topbar{padding:14px 28px}.topbar h1{font-size:19px}.content{padding:24px 28px 56px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+
+<div id="bootView" class="loginwrap"><div class="bootmsg">Memeriksa sesi…</div></div>
+
+<div id="loginView" class="loginwrap hidden"><div class="loginstack">
+  <div class="loginbrand"><img src="data:image/png;base64,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" alt="Healthy Go"><h1>Management Dept Delivery</h1><p>Penilaian harian kurir Healthy Go</p></div>
+  <form class="loginbox" id="loginForm"><h2>Masuk</h2><p class="small" style="margin:0">Gunakan akun yang diberikan Admin atau HRD.</p>
+    <div class="field"><label for="loginUsername">Username</label><input id="loginUsername" autocomplete="username" autocapitalize="none" required></div>
+    <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+    <div id="loginMsg" class="msg error hidden"></div><button class="btn-primary" id="loginBtn">Masuk</button></form>
+</div></div>
+
+<div id="appView" class="hidden">
+  <aside class="sidebar" id="sidebar" aria-label="Menu utama">
+    <div class="sidehead"><img src="data:image/png;base64,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" alt="Healthy Go"><div><b>Management Dept Delivery</b><span>Healthy Go · Penilaian Kurir</span></div><button class="sideclose" id="closeNav" aria-label="Tutup menu">×</button></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidefoot"><div class="who" id="sideName"></div><div class="role" id="sideRole"></div><button id="logoutBtn">Keluar</button></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="topbar"><button class="menu-btn" id="openNav" aria-label="Buka menu" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><img class="brandmini" src="data:image/png;base64,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" alt="Healthy Go"><h1 id="pageTitle">Dashboard</h1><div class="userchip"><span class="avatar" id="avatar"></span></div></header>
+    <main class="content">
+
+<section id="dashboardPage" class="panel"><h2>Status Penilaian per Area</h2><p class="small sub">Done: semua SDM dinilai lengkap. On Progress: sudah ada penilaian, belum semua lengkap. Not Done: belum ada penilaian.</p>
+  <div id="refreshBar" class="refreshbar hidden"><button class="btn-soft btn-sm" type="button" id="refreshDataBtn">↻ Refresh Data</button><span class="small" id="refreshInfo"></span></div>
+  <div class="grid cols-3 cols-dash"><div class="field"><label for="dashStart">Tanggal awal</label><input type="date" id="dashStart"></div><div class="field"><label for="dashEnd">Tanggal akhir</label><input type="date" id="dashEnd"></div><div class="formactions"><button class="btn-primary" id="dashLoad">Tampilkan</button></div></div>
+  <div id="dashMsg" class="msg hidden"></div><p class="small statcap hidden" id="dashStatCap"></p><div id="dashStats" class="stats hidden"></div><div id="dashboardTable" class="tablewrap tall sticky1 dash hidden"></div></section>
+
+<section id="assessmentPage" class="panel hidden"><h2>Isi Penilaian</h2><p class="small sub" id="assessHint"></p>
+  <div class="grid cols-3"><div class="field"><label for="assessDate">Tanggal penilaian</label><input type="date" id="assessDate"></div><div class="field"><span class="lbl">Area</span><div id="assessAreas" class="areachecks"></div></div><div class="formactions"><button id="loadCouriersBtn" class="btn-primary">Muat Data</button></div></div>
+  <div id="assessmentMsg" class="msg hidden"></div><div id="courierForm"></div>
+  <div class="savebar hidden" id="saveBar"><span class="small" id="saveSummary"></span><button id="saveReportsBtn" class="btn-primary">Simpan Penilaian</button></div></section>
+
+<section id="reportsPage" class="panel hidden"><h2>Lihat Penilaian</h2><p class="small sub">Data semua minggu bisa dilihat di sini.</p>
+  <div class="grid cols-3"><div class="field"><label for="reportDate">Tanggal</label><input type="date" id="reportDate"></div><div class="field"><span class="lbl">Area</span><div id="reportAreas" class="areachecks"></div></div><div class="formactions"><button id="loadReportsBtn" class="btn-primary">Lihat Laporan</button></div></div>
+  <div id="reportsMsg" class="msg hidden"></div><div id="reportsTable" class="tablewrap tall cards sticky1 hidden"></div></section>
+
+<section id="accountsPage" class="panel hidden"><h2 id="accountFormTitle">Tambah Akun</h2><p class="small sub">Korlap wajib memiliki minimal satu area.</p>
+  <form id="accountForm"><input type="hidden" id="originalUsername">
+    <div class="grid cols-acc"><div class="field"><label for="accountUsername">Username</label><input id="accountUsername" required minlength="4" maxlength="40" pattern="[A-Za-z0-9._-]+" autocapitalize="none"></div><div class="field"><label for="accountName">Nama</label><input id="accountName" required></div><div class="field"><label for="accountRole">Role</label><select id="accountRole"></select></div><div class="field" id="accountPasswordField"><label for="accountPassword">Password awal (min. 8 karakter)</label><input id="accountPassword" type="password" minlength="8"></div></div>
+    <div class="field" id="accountAreaField" style="margin-top:12px"><span class="lbl">Area Korlap</span><div id="accountAreas" class="areachecks"></div></div>
+    <div class="formactions" style="margin-top:14px"><button class="btn-primary" id="accountSubmit">Tambah Akun</button><button class="btn-soft hidden" type="button" id="cancelEditBtn">Batal Edit</button></div></form>
+  <div id="accountsMsg" class="msg hidden"></div><div class="tablewrap tall cards" id="accountsTable"></div></section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const CHECK=['Lunch','Dinner','Tas','Jaket','Helm','Sepatu'];
+const DEFAULT_OPTIONS={Lunch:['Hadir','Alpa','Izin','Sakit'],Dinner:['Hadir','Alpa','Izin','Sakit'],Tas:['Lengkap','Belum Punya','Kondisi Buruk'],Jaket:['Lengkap','Belum Punya','Kondisi Buruk'],Helm:['Lengkap','Belum Punya','Kondisi Buruk'],Sepatu:['Lengkap','Belum Punya','Kondisi Buruk']};
+const POSITIVE={Lunch:'Hadir',Dinner:'Hadir',Tas:'Lengkap',Jaket:'Lengkap',Helm:'Lengkap',Sepatu:'Lengkap'};
+const TONE={Hadir:'ok',Lengkap:'ok',Ya:'ok',Izin:'warn',Sakit:'warn','Belum Punya':'warn',Alpa:'bad','Kondisi Buruk':'bad'};
+const STATUS={DONE:['st-done','Done'],ON_PROGRESS:['st-prog','On Progress'],NOT_DONE:['st-not','Not Done']};
+const PAGES={dashboard:'Dashboard',assessment:'Penilaian Kurir',reports:'Laporan Penilaian',accounts:'Kelola Akun'};
+const ICONS={dashboard:'<path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/>',assessment:'<path d="M9 4h6v3H9z"/><path d="M7 5H5v15h14V5h-2"/><path d="m9 13 2 2 4-4"/>',reports:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',accounts:'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c.6-3.5 3-5.5 6-5.5s5.4 2 6 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c-.4-2.6-1.8-4.4-3.8-5.1"/>'};
+const SKEY='hg_raport_session_v1',SESSION_MS=6*60*60*1000;
+let token='',me=null,appData=null,activePage='dashboard',formGroups=[],formDate='',loadSeq=0,accountList=[];
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function msg(id,text,error=false){const el=$(id);el.textContent=text;el.classList.remove('hidden','error');if(error)el.classList.add('error');}
+function hideMsg(id){$(id).classList.add('hidden');}
+function setBusy(btn,busy,label){if(busy){btn.dataset.label=btn.textContent;btn.textContent=label||'Memproses...';btn.disabled=true;}else{btn.textContent=btn.dataset.label||btn.textContent;btn.disabled=false;}}
+function fmtDate(d){const p=String(d||'').split('-');return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:d;}
+function showOnly(view){['bootView','loginView','appView'].forEach(v=>$(v).classList.toggle('hidden',v!==view));}
+function opts(){return (appData&&appData.options)||DEFAULT_OPTIONS;}
+function isoWeek(s){const d=new Date(s+'T00:00:00Z'),thu=new Date(d.getTime()+(3-(d.getUTCDay()+6)%7)*86400000);return Math.floor((thu-Date.UTC(thu.getUTCFullYear(),0,1))/86400000/7)+1;}
+function show(id,on){$(id).classList.toggle('hidden',!on);}
+
+/* ---------- Menu (hamburger) ---------- */
+function openNav(){document.body.classList.add('nav-open');$('openNav').setAttribute('aria-expanded','true');}
+function closeNav(){document.body.classList.remove('nav-open');$('openNav').setAttribute('aria-expanded','false');}
+$('openNav').onclick=openNav;$('closeNav').onclick=closeNav;$('scrim').onclick=closeNav;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
+
+/* ---------- Sesi tersimpan di browser (maks 6 jam sejak login) ---------- */
+function saveSession(){try{localStorage.setItem(SKEY,JSON.stringify({token,exp:Date.now()+SESSION_MS-60000}));}catch(e){}}
+function loadSession(){try{const s=JSON.parse(localStorage.getItem(SKEY)||'null');if(s&&s.token&&s.exp>Date.now())return s.token;}catch(e){}clearSession();return '';}
+function clearSession(){try{localStorage.removeItem(SKEY);}catch(e){}}
+function toLogin(text){token='';me=null;appData=null;formGroups=[];formDate='';clearSession();closeNav();$('loginPassword').value='';showOnly('loginView');if(text)msg('loginMsg',text,true);else hideMsg('loginMsg');}
+
+/* ---------- Koneksi ke server (Google Apps Script) ---------- */
+// GANTI dengan URL Web App dari Apps Script (Deploy > Manage deployments), akhirannya /exec
+const API_URL='https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT/exec';
+async function api(fn,...args){
+  if(API_URL.includes('GANTI_DENGAN'))throw new Error('API_URL di index.html belum diisi dengan URL Web App Apps Script.');
+  let res;
+  try{res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})});}
+  catch(e){throw new Error('Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.');}
+  let out;try{out=await res.json();}catch(e){throw new Error('Server tidak merespons dengan benar. Coba lagi beberapa saat.');}
+  if(!out.ok){const m=out.error||'Terjadi kesalahan.';if(token&&/Sesi (berakhir|tidak valid)|Akun berubah/.test(m))toLogin('Sesi Anda telah berakhir. Silakan login kembali.');throw new Error(m);}
+  return out.data;
+}
+
+/* ---------- Pilihan area dengan checkbox ---------- */
+function renderAreaChecks(id,areas,checked){const sel=new Set((checked||[]).map(a=>a.toLowerCase()));$(id).innerHTML=`<div class="checktools"><button type="button" class="linkbtn" data-all="1">Pilih semua</button><button type="button" class="linkbtn" data-all="0">Kosongkan</button><span class="small" data-count></span></div><div class="checklist">${areas.length?areas.map(a=>`<label><input type="checkbox" value="${esc(a)}" ${sel.has(a.toLowerCase())?'checked':''}>${esc(a)}</label>`).join(''):'<span class="small">Tidak ada area.</span>'}</div>`;updateAreaCount(id);}
+function getChecked(id){return [...$(id).querySelectorAll('.checklist input:checked')].map(c=>c.value);}
+function setChecked(id,vals){const s=new Set((vals||[]).map(v=>v.toLowerCase()));$(id).querySelectorAll('.checklist input').forEach(c=>c.checked=s.has(c.value.toLowerCase()));updateAreaCount(id);}
+function updateAreaCount(id){const el=$(id).querySelector('[data-count]');if(el)el.textContent=`${getChecked(id).length} dari ${$(id).querySelectorAll('.checklist input').length} dipilih`;}
+function bindAreaChecks(id,onChange){$(id).addEventListener('click',e=>{const b=e.target.closest('[data-all]');if(!b)return;$(id).querySelectorAll('.checklist input').forEach(c=>c.checked=b.dataset.all==='1');updateAreaCount(id);if(onChange)onChange();});$(id).addEventListener('change',()=>{updateAreaCount(id);if(onChange)onChange();});}
+bindAreaChecks('assessAreas',()=>clearForm());
+bindAreaChecks('reportAreas');
+bindAreaChecks('accountAreas');
+
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();hideMsg('loginMsg');setBusy($('loginBtn'),true,'Memeriksa akun...');try{const r=await api('login',$('loginUsername').value,$('loginPassword').value);token=r.token;saveSession();await startApp();}catch(err){if(token){token='';clearSession();}showOnly('loginView');msg('loginMsg',err.message,true);}finally{setBusy($('loginBtn'),false);}});
+
+async function startApp(){appData=await api('getAppData',token);me=appData.user;showOnly('appView');$('sideName').textContent=me.nama;$('sideRole').textContent=me.role+(me.role==='KORLAP'&&me.area?' · '+me.area:'');$('avatar').textContent=String(me.nama||me.username).split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();$('avatar').title=`${me.nama} (${me.role})`;buildNav();populateAreas();setupRoleOptions();resetAccountForm();updateRefreshInfo();['dashStart','dashEnd','assessDate','reportDate'].forEach(id=>$(id).value=appData.today);setupAssessDate();clearForm();await showPage('dashboard');}
+
+function buildNav(){const nav=$('nav');nav.innerHTML='';const keys=['dashboard'];if(['ADMIN','KORLAP'].includes(me.role))keys.push('assessment');keys.push('reports');if(['ADMIN','HRD'].includes(me.role))keys.push('accounts');keys.forEach(key=>{const b=document.createElement('button');b.dataset.page=key;b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[key]}</svg><span>${PAGES[key]}</span>`;b.onclick=()=>{closeNav();showPage(key);};nav.appendChild(b);});}
+
+function populateAreas(){const areas=appData.areas||[],korlap=me.role==='KORLAP';const keepA=getChecked('assessAreas'),keepR=getChecked('reportAreas');renderAreaChecks('assessAreas',areas,keepA.length?keepA:(korlap?areas:[]));renderAreaChecks('reportAreas',areas,keepR.length?keepR:(korlap?areas:[]));renderAreaChecks('accountAreas',appData.allAreas||areas,[]);}
+
+function setupRoleOptions(){const roles=me.role==='HRD'?['HRD','KORLAP']:['ADMIN','HRD','KORLAP'];$('accountRole').innerHTML=roles.map(r=>`<option value="${r}">${r}</option>`).join('');}
+
+async function showPage(page){activePage=page;$('pageTitle').textContent=PAGES[page];document.querySelectorAll('#nav button').forEach(b=>{const on=b.dataset.page===page;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});Object.keys(PAGES).forEach(k=>show(k+'Page',k===page));window.scrollTo(0,0);if(page==='dashboard')await loadDashboard();if(page==='assessment'&&me.role==='KORLAP'&&!formGroups.length)await loadAssessment();if(page==='accounts')await loadAccounts();}
+
+/* ---------- Dashboard + Refresh Data (Admin) ---------- */
+function updateRefreshInfo(){if(me.role!=='ADMIN'){show('refreshBar',false);return;}show('refreshBar',true);const t=appData.lastRefresh?new Date(appData.lastRefresh).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'short'})+' WIB':'belum pernah';let s=`Sinkron Master SDM terakhir: ${t}`;if(appData.refreshCount)s+=` (${appData.refreshCount} SDM)`;if(appData.refreshStatus==='GAGAL')s+=`. Sinkron terakhir GAGAL: ${appData.refreshError||'-'}`;$('refreshInfo').textContent=s;}
+
+$('refreshDataBtn').onclick=async()=>{const b=$('refreshDataBtn');setBusy(b,true,'Menyinkronkan...');hideMsg('dashMsg');try{const r=await api('refreshDataForAdmin',token);appData=await api('getAppData',token);populateAreas();updateRefreshInfo();setupAssessDate();clearForm();msg('dashMsg',`Refresh berhasil: ${r.count} SDM dan ${r.users} akun tersinkron.`);await loadDashboard(true);}catch(e){msg('dashMsg',e.message,true);}finally{setBusy(b,false);}};
+
+$('dashLoad').onclick=()=>loadDashboard();
+async function loadDashboard(keepMsg){if(!keepMsg)hideMsg('dashMsg');show('dashboardTable',true);$('dashboardTable').innerHTML='<p class="small" style="padding:14px">Memuat...</p>';try{const r=await api('getDashboard',token,$('dashStart').value,$('dashEnd').value);const count={DONE:0,ON_PROGRESS:0,NOT_DONE:0};let html='<table><thead><tr><th>Area</th>'+r.dates.map(d=>`<th style="text-align:center">${esc(fmtDate(d))}</th>`).join('')+'</tr></thead><tbody>';r.matrix.forEach(row=>{html+=`<tr><td><b>${esc(row.area)}</b></td>`+row.cells.map(c=>{count[c.status]++;const [cls,label]=STATUS[c.status];return `<td class="cell"><span class="st ${cls}" title="${c.submitted} dari ${c.expected} SDM lengkap; ${c.saved} SDM sudah ada data"><i></i>${label}</span></td>`;}).join('')+'</tr>';});$('dashboardTable').innerHTML=html+'</tbody></table>';const last=r.dates[r.dates.length-1],lc={DONE:0,ON_PROGRESS:0,NOT_DONE:0};r.matrix.forEach(row=>{const c=row.cells[row.cells.length-1];if(c)lc[c.status]++;});$('dashStatCap').textContent=`Ringkasan ${fmtDate(last)} (${r.areas.length} area)`;show('dashStatCap',true);$('dashStats').innerHTML=`<div class="stat done"><b>${lc.DONE}</b><span>Done</span></div><div class="stat prog"><b>${lc.ON_PROGRESS}</b><span>On Progress</span></div><div class="stat not"><b>${lc.NOT_DONE}</b><span>Not Done</span></div>`;show('dashStats',true);}catch(e){msg('dashMsg',e.message,true);show('dashboardTable',false);show('dashStats',false);show('dashStatCap',false);}}
+
+/* ---------- Penilaian: batas minggu berjalan ---------- */
+function setupAssessDate(){const d=$('assessDate');d.min=appData.weekStart;d.max=appData.today;$('assessHint').textContent=`Bisa diisi/diubah untuk minggu ke-${appData.weekNo}: ${fmtDate(appData.weekStart)} s/d hari ini (${fmtDate(appData.today)}).`;}
+function dateError(d){if(!d)return 'Pilih tanggal penilaian.';if(d>appData.today)return `Tanggal ${fmtDate(d)} belum terjadi. Penilaian paling lambat untuk hari ini (${fmtDate(appData.today)}).`;if(d<appData.weekStart)return `Tanggal ${fmtDate(d)} berada di minggu ke-${isoWeek(d)}. Penilaian hanya bisa diisi/diubah untuk minggu berjalan (minggu ke-${appData.weekNo}: ${fmtDate(appData.weekStart)} s/d ${fmtDate(appData.weekEnd)}).`;return '';}
+
+function clearForm(){loadSeq++;formGroups=[];formDate='';$('courierForm').innerHTML='';show('saveBar',false);}
+$('loadCouriersBtn').onclick=()=>loadAssessment();
+$('assessDate').onchange=()=>{clearForm();hideMsg('assessmentMsg');const err=dateError($('assessDate').value);if(err){msg('assessmentMsg',err,true);return;}if(me.role==='KORLAP')loadAssessment();};
+
+async function loadAssessment(){hideMsg('assessmentMsg');const date=$('assessDate').value,err=dateError(date);if(err){clearForm();msg('assessmentMsg',err,true);return;}const areas=getChecked('assessAreas');if(!areas.length){clearForm();msg('assessmentMsg',(appData.areas||[]).length?'Pilih minimal satu area.':'Area akun Anda tidak ditemukan di Master SDM. Hubungi Admin.',true);return;}clearForm();const seq=loadSeq;$('courierForm').innerHTML='<p class="small">Memuat daftar SDM...</p>';try{const groups=await api('getCourierForm',token,date,areas);if(seq!==loadSeq)return;formGroups=groups;formDate=date;renderCourierForm();}catch(e){if(seq!==loadSeq)return;$('courierForm').innerHTML='';msg('assessmentMsg',e.message,true);}}
+
+function pickClass(v){return v?'p-'+(TONE[v]||'warn'):'p-empty';}
+function renderCourierForm(){const total=formGroups.reduce((s,g)=>s+g.rows.length,0);if(!total){$('courierForm').innerHTML='<p class="msg">Tidak ada SDM di area yang dipilih.</p>';show('saveBar',false);return;}const O=opts();let html='';formGroups.forEach((g,gi)=>{const full=g.rows.filter(r=>r.status==='LENGKAP').length,part=g.rows.filter(r=>r.status==='SEBAGIAN').length;html+=`<div class="sectionhead"><div><b>${esc(g.area)}</b><div class="small">${g.rows.length} SDM, ${full} tersimpan lengkap${part?`, ${part} sebagian`:''}</div></div><button type="button" class="btn-sm" data-fill="${gi}">Isi yang kosong: Hadir / Lengkap</button></div><div class="tablewrap cards sticky1"><table class="cardtable assess"><thead><tr><th>Nama</th>${CHECK.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;g.rows.forEach((r,ri)=>{const tag=r.status==='LENGKAP'?'<span class="tag full">tersimpan</span>':r.status==='SEBAGIAN'?'<span class="tag part">sebagian</span>':'';html+=`<tr><td class="c-full"><b>${esc(r.nama)}</b>${tag}<div class="meta">${esc([r.kodeWarna,r.statusKaryawan,r.jabatan].filter(Boolean).join(' · '))}</div></td>${CHECK.map(k=>{const v=r.values[k]||'';return `<td data-label="${k}"><select class="pick ${pickClass(v)}" data-g="${gi}" data-i="${ri}" data-key="${k}" aria-label="${esc(k+' '+r.nama)}"><option value="">— pilih —</option>${O[k].map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select></td>`;}).join('')}</tr>`;});html+='</tbody></table></div>';});$('courierForm').innerHTML=html;show('saveBar',true);updateSaveSummary();}
+
+function updateSaveSummary(){const groups=collectForm(),total=groups.reduce((s,g)=>s+g.items.length,0),done=groups.reduce((s,g)=>s+g.items.filter(it=>CHECK.every(k=>it.values[k])).length,0);$('saveSummary').innerHTML=`<b>${done}</b> dari ${total} SDM terisi lengkap`;}
+$('courierForm').addEventListener('change',e=>{const s=e.target.closest('select.pick');if(s){s.className='pick '+pickClass(s.value);updateSaveSummary();}});
+$('courierForm').addEventListener('click',e=>{const b=e.target.closest('[data-fill]');if(!b)return;$('courierForm').querySelectorAll(`select.pick[data-g="${b.dataset.fill}"]`).forEach(s=>{if(!s.value){s.value=POSITIVE[s.dataset.key];s.className='pick '+pickClass(s.value);}});updateSaveSummary();});
+
+function collectForm(){const groups=formGroups.map(g=>({area:g.area,items:g.rows.map(r=>({nama:r.nama,values:{}}))}));$('courierForm').querySelectorAll('select.pick').forEach(s=>{const g=groups[+s.dataset.g],it=g&&g.items[+s.dataset.i];if(it)it.values[s.dataset.key]=s.value;});return groups;}
+
+$('saveReportsBtn').onclick=async()=>{hideMsg('assessmentMsg');if(!formGroups.length||!formDate){msg('assessmentMsg','Muat data penilaian terlebih dahulu.',true);return;}const err=dateError(formDate);if(err){msg('assessmentMsg',err,true);return;}
+const groups=collectForm(),total=groups.reduce((s,g)=>s+g.items.length,0);
+const incomplete=groups.flatMap(g=>g.items.filter(it=>CHECK.some(k=>!it.values[k])).map(it=>it.nama));
+let text=`Simpan penilaian ${total} SDM?\n\nTanggal: ${fmtDate(formDate)}\nArea: ${groups.map(g=>`${g.area} (${g.items.length})`).join(', ')}`;
+if(incomplete.length)text+=`\n\n⚠ ${incomplete.length} SDM belum lengkap dan dihitung belum selesai di dashboard:\n${incomplete.slice(0,10).join(', ')}${incomplete.length>10?` dan ${incomplete.length-10} lainnya`:''}`;
+if(!confirm(text))return;
+const btn=$('saveReportsBtn');setBusy(btn,true,'Menyimpan...');
+try{const r=await api('saveCourierReports',token,formDate,groups);formGroups.forEach((g,gi)=>g.rows.forEach((row,ri)=>{row.values={...groups[gi].items[ri].values};row.status=CHECK.every(k=>row.values[k])?'LENGKAP':'SEBAGIAN';}));renderCourierForm();msg('assessmentMsg',`Penilaian ${r.saved} SDM untuk tanggal ${fmtDate(formDate)} berhasil disimpan (${r.complete} lengkap${r.saved-r.complete?`, ${r.saved-r.complete} belum lengkap`:''}).`);$('assessmentMsg').scrollIntoView({behavior:'smooth',block:'center'});}
+catch(e){msg('assessmentMsg',e.message,true);$('assessmentMsg').scrollIntoView({behavior:'smooth',block:'center'});}finally{setBusy(btn,false);}};
+
+/* ---------- Laporan ---------- */
+$('loadReportsBtn').onclick=loadReports;
+async function loadReports(){hideMsg('reportsMsg');try{const date=$('reportDate').value,areas=getChecked('reportAreas');if(!date)throw Error('Pilih tanggal.');if(!areas.length)throw Error('Pilih minimal satu area.');show('reportsTable',true);$('reportsTable').innerHTML='<p class="small" style="padding:14px">Memuat...</p>';const rows=await api('getCourierReports',token,date,areas);const has=new Set(rows.map(r=>r.area)),missing=areas.filter(a=>!has.has(a));if(missing.length)msg('reportsMsg',`Belum ada penilaian tanggal ${fmtDate(date)} untuk area: ${missing.join(', ')}`);if(!rows.length){show('reportsTable',false);return;}let html='<table class="cardtable"><thead><tr><th>Nama</th><th>Area</th><th>Kode Warna</th><th>Status Karyawan</th><th>Jabatan</th>'+CHECK.map(k=>`<th>${k}</th>`).join('')+'</tr></thead><tbody>';rows.forEach(r=>{html+=`<tr><td class="c-full"><b>${esc(r.nama)}</b><div class="meta">${esc([r.area,r.kodeWarna,r.statusKaryawan].filter(Boolean).join(' · '))}</div></td><td class="c-hide">${esc(r.area)}</td><td class="c-hide">${esc(r.kodeWarna)}</td><td class="c-hide">${esc(r.statusKaryawan)}</td><td class="c-hide">${esc(r.jabatan)}</td>`+CHECK.map(k=>{const v=r.values[k];return v?`<td data-label="${k}" class="v-${TONE[v]||'warn'}">${esc(v)}</td>`:`<td data-label="${k}" class="small">—</td>`;}).join('')+'</tr>';});$('reportsTable').innerHTML=html+'</tbody></table>';}catch(e){msg('reportsMsg',e.message,true);show('reportsTable',false);}}
+
+/* ---------- Kelola Akun ---------- */
+$('accountRole').onchange=()=>show('accountAreaField',$('accountRole').value==='KORLAP');
+$('accountForm').onsubmit=async e=>{e.preventDefault();const btn=$('accountSubmit');setBusy(btn,true,'Memproses...');hideMsg('accountsMsg');try{const role=$('accountRole').value,area=role==='KORLAP'?getChecked('accountAreas').join(', '):'';if(role==='KORLAP'&&!area)throw Error('Pilih minimal satu area untuk Korlap.');const p={username:$('accountUsername').value.trim(),nama:$('accountName').value.trim(),role,area};if(!$('originalUsername').value){p.password=$('accountPassword').value;await api('adminCreateUser',token,p);msg('accountsMsg','Akun berhasil ditambahkan.');}else{p.originalUsername=$('originalUsername').value;await api('adminEditUser',token,p);msg('accountsMsg','Akun berhasil diperbarui.');}resetAccountForm();await loadAccounts(true);}catch(err){msg('accountsMsg',err.message,true);}finally{setBusy(btn,false);}};
+
+function resetAccountForm(){$('accountForm').reset();$('originalUsername').value='';setChecked('accountAreas',[]);$('accountFormTitle').textContent='Tambah Akun';$('accountSubmit').textContent='Tambah Akun';show('accountPasswordField',true);$('accountPassword').required=true;show('cancelEditBtn',false);show('accountAreaField',$('accountRole').value==='KORLAP');}
+$('cancelEditBtn').onclick=resetAccountForm;
+
+async function loadAccounts(keepMsg){if(!keepMsg)hideMsg('accountsMsg');$('accountsTable').innerHTML='<p class="small" style="padding:14px">Memuat...</p>';try{accountList=await api('adminListUsers',token);let html='<table class="cardtable"><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Area</th><th>Aksi</th></tr></thead><tbody>';accountList.forEach((u,i)=>{const locked=me.role==='HRD'&&u.role==='ADMIN';html+=`<tr><td data-label="Username"><b>${esc(u.username)}</b></td><td data-label="Nama">${esc(u.nama)}</td><td data-label="Role">${esc(u.role)}</td><td data-label="Area" class="c-full" style="white-space:normal">${esc(u.area||'—')}</td><td class="c-full">${locked?'<span class="small">Hanya dapat dikelola Admin</span>':`<div class="actions"><button class="btn-soft btn-sm" data-act="edit" data-idx="${i}">Edit</button><button class="btn-warn btn-sm" data-act="reset" data-idx="${i}">Reset Password</button><button class="btn-danger btn-sm" data-act="delete" data-idx="${i}">Hapus</button></div>`}</td></tr>`;});$('accountsTable').innerHTML=html+'</tbody></table>';}catch(e){msg('accountsMsg',e.message,true);$('accountsTable').innerHTML='';}}
+
+$('accountsTable').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b)return;const u=accountList[+b.dataset.idx];if(!u)return;if(b.dataset.act==='edit')editAccount(u);else if(b.dataset.act==='reset')resetPassword(u.username);else if(b.dataset.act==='delete')deleteAccount(u.username);};
+
+function editAccount(u){$('originalUsername').value=u.username;$('accountUsername').value=u.username;$('accountName').value=u.nama;$('accountRole').value=u.role;show('accountAreaField',u.role==='KORLAP');setChecked('accountAreas',String(u.area||'').split(',').map(s=>s.trim()).filter(Boolean));show('accountPasswordField',false);$('accountPassword').required=false;$('accountFormTitle').textContent='Edit Akun: '+u.username;$('accountSubmit').textContent='Simpan Perubahan';show('cancelEditBtn',true);$('accountsPage').scrollIntoView({behavior:'smooth',block:'start'});}
+async function deleteAccount(username){if(!confirm('Hapus akun '+username+'? Tindakan ini tidak dapat dibatalkan.'))return;try{await api('adminDeleteUser',token,username);await loadAccounts();msg('accountsMsg','Akun '+username+' berhasil dihapus.');}catch(e){msg('accountsMsg',e.message,true);}}
+async function resetPassword(username){const p=prompt(`Masukkan password baru untuk ${username} (minimal 8 karakter):`);if(p===null)return;if(p.length<8){msg('accountsMsg','Password minimal 8 karakter.',true);return;}try{await api('adminResetPassword',token,username,p);msg('accountsMsg','Password akun '+username+' berhasil direset.');}catch(e){msg('accountsMsg',e.message,true);}}
+
+$('logoutBtn').onclick=async()=>{const t=token;toLogin();try{await api('logout',t);}catch(e){}};
+
+/* ---------- Saat halaman dibuka / di-refresh ---------- */
+(async()=>{token=loadSession();if(!token){showOnly('loginView');return;}try{await startApp();}catch(e){toLogin(/Sesi|Akun berubah/.test(e.message)?'Sesi Anda telah berakhir. Silakan login kembali.':e.message);}})();
+</script></body></html>
