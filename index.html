@@ -226,7 +226,7 @@ function toLogin(text){token='';me=null;appData=null;formGroups=[];formDate='';c
 
 /* ---------- Koneksi ke server (Google Apps Script) ---------- */
 // GANTI dengan URL Web App dari Apps Script (Deploy > Manage deployments), akhirannya /exec
-const API_URL='https://script.google.com/macros/s/AKfycbzwj43WKlORppERMB5VClRtVUd0DfltljkgmBCp-xdxcle92KU1Pgb1McWMclTS48fq/exec';
+const API_URL='hhttps://script.google.com/macros/s/AKfycbyVPkpkO2EAYDFDLHLfDYexI6RUun8CAZpuVeVikRg3uR0YWrLEwSFb9djQNV2RFUHd/exec';
 async function api(fn,...args){
   if(API_URL.includes('GANTI_DENGAN'))throw new Error('API_URL di index.html belum diisi dengan URL Web App Apps Script.');
   let res;
