@@ -174,6 +174,9 @@ select.tsel{border:1px solid #cad6cd;border-radius:8px;padding:7px 4px 7px 8px;m
 select.tsel:disabled{opacity:.45}
 .empty{padding:18px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;background:var(--hg-50)}
 @media (max-width:760px){.sess{min-width:0}.esttbl td[data-label]{grid-column:1/-1}}
+
+/* Tidak Masuk: netral (abu-abu) */
+select.pick.p-off{border-color:#c3cbc6;background:#eef1ef;color:#55615a;font-weight:600}.v-off{color:#55615a;font-weight:700}
 </style></head><body>
 
 <div id="bootView" class="loginwrap"><div class="bootmsg">Memeriksa sesi…</div></div>
@@ -243,9 +246,9 @@ select.tsel:disabled{opacity:.45}
 <script>
 const $=id=>document.getElementById(id);
 const CHECK=['Lunch','Dinner','Tas','Jaket','Helm','Sepatu'];
-const DEFAULT_OPTIONS={Lunch:['Hadir','Alpa','Izin','Sakit'],Dinner:['Hadir','Alpa','Izin','Sakit'],Tas:['Lengkap','Belum Punya','Kondisi Buruk'],Jaket:['Lengkap','Belum Punya','Kondisi Buruk'],Helm:['Lengkap','Belum Punya','Kondisi Buruk'],Sepatu:['Lengkap','Belum Punya','Kondisi Buruk']};
+const DEFAULT_OPTIONS={Lunch:['Hadir','Alpa','Izin','Sakit'],Dinner:['Hadir','Alpa','Izin','Sakit'],Tas:['Lengkap','Tidak Lengkap','Kondisi Buruk','Belum Punya','Tidak Masuk'],Jaket:['Lengkap','Tidak Lengkap','Kondisi Buruk','Belum Punya','Tidak Masuk'],Helm:['Lengkap','Tidak Lengkap','Kondisi Buruk','Belum Punya','Tidak Masuk'],Sepatu:['Lengkap','Tidak Lengkap','Kondisi Buruk','Belum Punya','Tidak Masuk']};
 const POSITIVE={Lunch:'Hadir',Dinner:'Hadir',Tas:'Lengkap',Jaket:'Lengkap',Helm:'Lengkap',Sepatu:'Lengkap'};
-const TONE={Hadir:'ok',Lengkap:'ok',Ya:'ok',Izin:'warn',Sakit:'warn','Belum Punya':'warn',Alpa:'bad','Kondisi Buruk':'bad'};
+const TONE={Hadir:'ok',Lengkap:'ok',Ya:'ok',Izin:'warn',Sakit:'warn','Belum Punya':'warn','Tidak Lengkap':'warn',Alpa:'bad','Kondisi Buruk':'bad','Tidak Masuk':'off'};
 const STATUS={DONE:['st-done','Done'],ON_PROGRESS:['st-prog','On Progress'],NOT_DONE:['st-not','Not Done']};
 const SESS=['Lunch','Dinner'],ABSENT='TIDAK_HADIR',RANGE={Lunch:['00:00','11:59'],Dinner:['12:00','23:59']};
 const PAGES={dashboard:'Dashboard',assessment:'Penilaian Kurir',estafet:'Estafet',reports:'Laporan',accounts:'Kelola Akun',settings:'Pengaturan'};
@@ -282,7 +285,7 @@ function toLogin(text){token='';me=null;appData=null;formGroups=[];formDate='';e
 
 /* ---------- Koneksi ke server (Google Apps Script) ---------- */
 // GANTI dengan URL Web App dari Apps Script (Deploy > Manage deployments), akhirannya /exec
-const API_URL='https://script.google.com/macros/s/AKfycbyVPkpkO2EAYDFDLHLfDYexI6RUun8CAZpuVeVikRg3uR0YWrLEwSFb9djQNV2RFUHd/exec';
+const API_URL='https://script.google.com/macros/s/AKfycby9oXm9nK-88pqUzY6UV1jB6rVWF-qfkxRQgPT0jd_6ixBv2Oa8HnXu6Zs4WrKi4kdM/exec';
 async function api(fn,...args){
   if(API_URL.includes('GANTI_DENGAN'))throw new Error('API_URL di index.html belum diisi dengan URL Web App Apps Script.');
   let res;
